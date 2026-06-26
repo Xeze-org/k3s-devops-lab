@@ -22,6 +22,13 @@ in `values.yaml`; ArgoCD installs or prunes them. Every tool is reachable at
 >
 > ArgoCD pulls from **your repository**, not this one.
 
+
+## Get your passwords (username is `admin` for every tool):
+
+```powershell
+vagrant ssh -c "bash /vagrant/scripts/passwords.sh"
+```
+
 ```mermaid
 flowchart LR
   v[gitops/root/values.yaml<br/>domain + tool flags] --> vg[vagrant up]
