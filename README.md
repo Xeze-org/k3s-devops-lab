@@ -15,8 +15,6 @@ flowchart LR
   gh --> tools[enabled tools<br/>grafana · loki · jenkins · nexus]
 ```
 
-> Full design: [`docs/superpowers/specs/2026-06-26-k3s-devops-lab-design.md`](docs/superpowers/specs/2026-06-26-k3s-devops-lab-design.md)
-
 ## Prerequisites (one-time, all free for personal use)
 
 1. **VMware Workstation Pro** (free for personal use)
