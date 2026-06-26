@@ -17,10 +17,38 @@ flowchart LR
 
 ## Prerequisites (one-time, all free for personal use)
 
-1. **VMware Workstation Pro** (free for personal use)
-2. **Vagrant** + **Vagrant VMware Utility**, then `vagrant plugin install vagrant-vmware-desktop`
-3. A **Cloudflare** domain + API token (*Account:Cloudflare Tunnel:Edit* + *Zone:DNS:Edit* + *Zone:Zone:Read*) + your Account ID
-4. A **public GitHub repo** for this project (ArgoCD reads it with **no token**)
+1. **Download & install VMware Workstation Pro** — free for personal use, from
+   [Broadcom](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware+Workstation+Pro).
+
+2. **Download & install Vagrant** — from
+   [developer.hashicorp.com/vagrant/install](https://developer.hashicorp.com/vagrant/install).
+
+3. **Install the Vagrant VMware Utility** — from
+   [developer.hashicorp.com/vagrant/install/vmware](https://developer.hashicorp.com/vagrant/install/vmware),
+   then install the provider plugin:
+   ```powershell
+   vagrant plugin install vagrant-vmware-desktop
+   ```
+
+4. **Create a Cloudflare API token** at
+   [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) →
+   *Create Custom Token*, with these permissions:
+   - `Account` · `Cloudflare Tunnel` · `Edit`
+   - `Zone` · `DNS` · `Edit`
+   - `Zone` · `Zone` · `Read`
+
+   Put it in `.env` as `CF_API_TOKEN`.
+
+5. **Get your Cloudflare Account ID** — in the dashboard, click your domain. The URL becomes:
+   ```
+   https://dash.cloudflare.com/6a62f1c74965310d79b3fb7f1ac4abde/domain.com
+                              └──────────────┬───────────────┘
+                                   this middle part = Account ID
+   ```
+   Copy **only that middle segment** (between the two `/`) into `.env` as `CF_ACCOUNT_ID`.
+
+6. **Create a public GitHub repo** for this project and push it. ArgoCD reads it with
+   **no token** (public). Set its URL as `repoURL` in `gitops/root/values.yaml`.
 
 ## Quick start
 

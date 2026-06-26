@@ -35,6 +35,8 @@ spec:
           image: cloudflare/cloudflared:latest
           args:
             - tunnel
+            - --metrics
+            - 0.0.0.0:2000      # pin metrics/health port so the liveness probe matches
             - --config
             - /etc/cloudflared/config/config.yaml
             - run
@@ -44,6 +46,7 @@ spec:
               port: 2000
             initialDelaySeconds: 10
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               cpu: 50m
