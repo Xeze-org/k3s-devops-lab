@@ -87,8 +87,8 @@ flowchart LR
 
 ## VM auto-sizing
 
-Computed from the enabled flags in `values.yaml` — base 4GB/2CPU, +1GB monitoring,
-+0.5GB Loki, +2GB/+1CPU each for Jenkins/Nexus — clamped to **4–8GB / 2–4 CPU**.
+Computed from the enabled flags in `values.yaml` — base 4GB/4CPU, +1GB monitoring,
++0.5GB Loki, +2GB/+1CPU each for Jenkins/Nexus — clamped to **4–8GB / 4–8 CPU**.
 Override with `VM_MEMORY`/`VM_CPUS` in `.env`. You can't comfortably run all four heavy
 tools at once — that's the point of toggles.
 

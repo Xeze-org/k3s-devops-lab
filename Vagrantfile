@@ -4,7 +4,7 @@
 # Single-VM k3s DevOps lab.
 #   - Config (domain, repo, tool flags) is read from gitops/root/values.yaml.
 #   - Secrets (Cloudflare token) are read from .env.
-#   - VM RAM/CPU auto-computed from the enabled flags (clamped 4-8GB / 2-4 CPU).
+#   - VM RAM/CPU auto-computed from the enabled flags (clamped 4-8GB / 4-8 CPU).
 #   - Provisioned with ansible_local (Ansible runs INSIDE the guest -> Windows-friendly).
 
 require "yaml"
@@ -42,7 +42,7 @@ abort("\n[Vagrant] Set 'domain' and 'repoURL' in gitops/root/values.yaml.\n\n") 
 
 # ── Auto-sizing from the enabled flags ─────────────────────────────────────────
 mem = 4096
-cpu = 2
+cpu = 4
 mem += 1024 if enabled?(vals, "monitoring")
 mem += 512  if enabled?(vals, "loki")
 if enabled?(vals, "jenkins") ; mem += 2048 ; cpu += 1 ; end
@@ -50,9 +50,9 @@ if enabled?(vals, "nexus")   ; mem += 2048 ; cpu += 1 ; end
 
 computed_mem = mem
 mem = [[mem, 4096].max, 8192].min
-cpu = [[cpu, 2].max, 4].min
+cpu = [[cpu, 4].max, 8].min
 mem = [[env["VM_MEMORY"].to_i, 4096].max, 8192].min unless env["VM_MEMORY"].to_s.empty?
-cpu = [[env["VM_CPUS"].to_i,  2].max,    4].min     unless env["VM_CPUS"].to_s.empty?
+cpu = [[env["VM_CPUS"].to_i,  4].max,    8].min     unless env["VM_CPUS"].to_s.empty?
 
 warn "\n[Vagrant] WARNING: enabled tools want #{computed_mem}MB but clamped to 8192MB. "\
      "Consider disabling Jenkins or Nexus.\n\n" if computed_mem > 8192
