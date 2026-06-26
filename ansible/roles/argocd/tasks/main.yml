@@ -1,0 +1,24 @@
+---
+# Install ArgoCD and register the app-of-apps root Application.
+- name: Install ArgoCD manifests
+  ansible.builtin.shell: |
+    {{ kubectl }} apply -n argocd -f \
+      https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  register: argocd_apply
+  changed_when: "'created' in argocd_apply.stdout"
+
+- name: Wait for the ArgoCD server to be available
+  ansible.builtin.shell: |
+    {{ kubectl }} -n argocd rollout status deploy/argocd-server --timeout=300s
+  changed_when: false
+
+- name: Render the root app-of-apps Application
+  ansible.builtin.template:
+    src: root-app.yaml.j2
+    dest: /tmp/root-app.yaml
+    mode: "0644"
+
+- name: Apply the root Application
+  ansible.builtin.shell: "{{ kubectl }} apply -f /tmp/root-app.yaml"
+  register: root_apply
+  changed_when: "'created' in root_apply.stdout or 'configured' in root_apply.stdout"

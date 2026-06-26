@@ -1,0 +1,38 @@
+{{- if .Values.nexus.enabled }}
+# Nexus Repository Manager. JVM-heavy — only enable on an 8GB VM.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nexus
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://sonatype.github.io/helm3-charts/
+    chart: nexus-repository-manager
+    targetRevision: 65.0.0
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          hostPath: /
+          hostRepo: nexus.{{ .Values.domain }}
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1.5Gi
+          limits:
+            memory: 2Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nexus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
