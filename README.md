@@ -4,6 +4,24 @@ A fully-automated, modular DevOps learning lab on one VMware VM. Toggle tools on
 in `values.yaml`; ArgoCD installs or prunes them. Every tool is reachable at
 `https://<tool>.<your-domain>` via a Cloudflare Tunnel — no port-forwarding, no public IP.
 
+> [!WARNING]
+> **After forking this repository, you MUST update `gitops/root/values.yaml` and push the changes to your own repository before running `vagrant up`.**
+>
+> Update:
+> - `repoURL` → your GitHub repository URL
+> - `domain` → your own domain
+> - Tool flags (`monitoring`, `jenkins`, `nexus`, etc.)
+>
+> Then commit and push:
+>
+> ```bash
+> git add gitops/root/values.yaml
+> git commit -m "Configure my DevOps lab"
+> git push
+> ```
+>
+> ArgoCD pulls from **your repository**, not this one.
+
 ```mermaid
 flowchart LR
   v[gitops/root/values.yaml<br/>domain + tool flags] --> vg[vagrant up]
