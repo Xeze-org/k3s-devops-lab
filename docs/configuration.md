@@ -4,13 +4,15 @@ Two files drive everything. **Edit, `git push`, then `vagrant up`.**
 
 ## 1. `.env` — secrets only (gitignored, never committed)
 
+### Follow This for env [Prerequisites](prerequisites.md) 
+
 Copy `.env.example` → `.env` and fill in your Cloudflare values:
 
 ```ini
 # Cloudflare API token — scopes:
 #   Account:Cloudflare Tunnel:Edit  +  Zone:DNS:Edit  +  Zone:Zone:Read
 CF_API_TOKEN=your-cloudflare-api-token
-CF_ACCOUNT_ID=6a62f1c74965310d79b3fb7f1ac4abde
+CF_ACCOUNT_ID=you-cloudflare-id
 
 # Optional VM-size override. Blank = auto-compute from enabled tools.
 VM_MEMORY=
