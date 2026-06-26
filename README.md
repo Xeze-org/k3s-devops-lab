@@ -1,52 +1,81 @@
 # k3-kube — single-VM DevOps lab
 
 A fully-automated, modular DevOps learning lab on one VMware VM. Toggle tools on/off
-from `.env`; ArgoCD installs or prunes them. Every tool is reachable at
-`https://<tool>.<your-domain>` — no port-forwarding.
+in `values.yaml`; ArgoCD installs or prunes them. Every tool is reachable at
+`https://<tool>.<your-domain>` via a Cloudflare Tunnel — no port-forwarding, no public IP.
 
 ```mermaid
 flowchart LR
-  env([.env<br/>flags + tokens]) --> vg[Vagrant<br/>auto-sizes VM]
+  v[gitops/root/values.yaml<br/>domain + tool flags] --> vg[vagrant up]
   vg --> an[Ansible bootstrap]
   an --> k3s[k3s]
   an --> cf[cloudflared tunnel]
   an --> ar[ArgoCD]
-  ar -->|pulls| gh[(GitHub<br/>GitOps repo)]
+  ar -->|pulls public repo| gh[(GitHub)]
   gh --> tools[enabled tools<br/>grafana · loki · jenkins · nexus]
 ```
 
+> Full design: [`docs/superpowers/specs/2026-06-26-k3s-devops-lab-design.md`](docs/superpowers/specs/2026-06-26-k3s-devops-lab-design.md)
 
 ## Prerequisites (one-time, all free for personal use)
 
 1. **VMware Workstation Pro** (free for personal use)
 2. **Vagrant** + **Vagrant VMware Utility**, then `vagrant plugin install vagrant-vmware-desktop`
-3. **Git for Windows** (helper scripts run via Git Bash)
-4. A **Cloudflare** domain + API token (*Zone:DNS:Edit* + *Account:Cloudflare Tunnel:Edit*) + Account ID
-5. A **GitHub repo** for this project + a token with `repo` scope
+3. A **Cloudflare** domain + API token (*Account:Cloudflare Tunnel:Edit* + *Zone:DNS:Edit* + *Zone:Zone:Read*) + your Account ID
+4. A **public GitHub repo** for this project (ArgoCD reads it with **no token**)
 
 ## Quick start
 
 ```powershell
-Copy-Item .env.example .env   # fill in DOMAIN, CF_*, GIT_*, GITHUB_TOKEN, flags
-.\lab.ps1 up                  # boot + bootstrap
-.\lab.ps1 status              # VM size, ArgoCD health, tool URLs
+# 1. Secrets (gitignored): just the Cloudflare token
+Copy-Item .env.example .env        # fill in CF_API_TOKEN + CF_ACCOUNT_ID
+
+# 2. Config: set your domain + which tools you want
+#    edit gitops/root/values.yaml, then commit + push so ArgoCD can read it
+git add gitops/root/values.yaml; git commit -m "configure lab"; git push
+
+# 3. Boot everything
+vagrant up
 ```
 
-| Command | Does |
-|---|---|
-| `up` | boot VM + bootstrap everything |
-| `apply` | re-render flags from `.env`, push, reconcile |
-| `sync` | force ArgoCD to reconcile now |
-| `status` | flags + ArgoCD app health + URLs |
-| `plan` | Ansible dry-run |
-| `down` | destroy VM |
-| `clean-cf` | delete the tunnel + wildcard DNS |
+That's it. `vagrant up` reads `values.yaml` (domain, flags, VM sizing) and `.env`
+(Cloudflare token), then Ansible bootstraps k3s + ArgoCD + the tunnel. ArgoCD installs
+the tools you enabled.
 
-> With `make` (Git Bash/Linux), the same verbs work: `make up`, `make apply`, …
+## Everyday commands
+
+```powershell
+vagrant up          # boot + bootstrap (or apply provisioning changes)
+vagrant ssh         # shell into the VM
+vagrant reload      # re-read VM size after toggling heavy tools
+vagrant destroy -f  # tear down
+```
+
+Optional helper scripts (need Git Bash):
+
+```bash
+bash scripts/status.sh     # flags + ArgoCD app health + URLs
+bash scripts/check.sh      # curl each enabled tool's URL
+bash scripts/clean-cf.sh   # delete the Cloudflare tunnel + wildcard DNS
+```
+
+## Toggling a tool
+
+```mermaid
+flowchart LR
+  ed[Edit enabled: in values.yaml] --> pu[git push]
+  pu --> ad{ArgoCD diff}
+  ad -->|true| inst[install tool]
+  ad -->|false| prune[prune tool]
+```
+
+Edit a flag in `gitops/root/values.yaml`, `git push`, and ArgoCD reconciles within
+~3 min. If you enable/disable a *heavy* tool (Jenkins/Nexus), run `vagrant reload` so the
+VM resizes. To force ArgoCD immediately: `vagrant ssh -c "bash /vagrant/scripts/sync.sh"`.
 
 ## How requests reach a tool
 
-One wildcard `*.<domain>` covers every tool. The tunnel is **outbound-only** — no public IP.
+One wildcard `*.<domain>` covers every tool. The tunnel is **outbound-only**.
 
 ```mermaid
 flowchart LR
@@ -56,32 +85,19 @@ flowchart LR
   t --> s[grafana service]
 ```
 
-## How toggling works
-
-Flags live in Git (`values.yaml`); secrets are injected into the cluster by Ansible and
-**never committed**.
-
-```mermaid
-flowchart LR
-  ed[Edit flag in .env] --> ap[lab.ps1 apply]
-  ap --> rn[render values.yaml] --> pu[git push]
-  pu --> ad{ArgoCD diff}
-  ad -->|true| inst[install tool]
-  ad -->|false| prune[prune tool]
-```
-
 ## VM auto-sizing
 
-Computed from enabled flags — base 4GB/2CPU, +1GB monitoring, +0.5GB Loki, +2GB/+1CPU
-each for Jenkins/Nexus — clamped to **4–8GB / 2–4 CPU**. Override via `VM_MEMORY`/`VM_CPUS`
-in `.env`. You can't comfortably run all four heavy tools at once — that's the point of toggles.
+Computed from the enabled flags in `values.yaml` — base 4GB/2CPU, +1GB monitoring,
++0.5GB Loki, +2GB/+1CPU each for Jenkins/Nexus — clamped to **4–8GB / 2–4 CPU**.
+Override with `VM_MEMORY`/`VM_CPUS` in `.env`. You can't comfortably run all four heavy
+tools at once — that's the point of toggles.
 
 ## First-run notes
 
 - **Pinned Helm chart versions** in `gitops/root/templates/*.yaml` may age out. On a
   `chart not found` sync error, bump that app's `targetRevision`.
-- The Cloudflare role creates a locally-managed tunnel named `k3-kube`; re-runs reuse the
-  in-cluster credentials. `clean-cf` removes the tunnel + wildcard DNS.
+- The Cloudflare role creates a tunnel named `k3-kube`; re-runs reuse the in-cluster
+  credentials. `scripts/clean-cf.sh` removes the tunnel + wildcard DNS.
 - TLS terminates at Cloudflare's edge; in-cluster traffic to Traefik is plain HTTP.
 
 ## License

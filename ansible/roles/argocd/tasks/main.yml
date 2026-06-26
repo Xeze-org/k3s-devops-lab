@@ -1,16 +1,51 @@
 ---
 # Install ArgoCD and register the app-of-apps root Application.
-- name: Install ArgoCD manifests
+- name: Ensure argocd namespace exists
   ansible.builtin.shell: |
-    {{ kubectl }} apply -n argocd -f \
+    {{ kubectl }} create namespace argocd \
+      --dry-run=client -o yaml | {{ kubectl }} apply -f -
+  changed_when: false
+
+- name: Install ArgoCD manifests (server-side apply — the ApplicationSet CRD is too big for client-side)
+  ansible.builtin.shell: |
+    {{ kubectl }} apply --server-side --force-conflicts -n argocd -f \
       https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   register: argocd_apply
-  changed_when: "'created' in argocd_apply.stdout"
+  until: argocd_apply is succeeded
+  retries: 3
+  delay: 10
+  changed_when: "'configured' in argocd_apply.stdout or 'created' in argocd_apply.stdout or 'serverside-applied' in argocd_apply.stdout"
 
 - name: Wait for the ArgoCD server to be available
   ansible.builtin.shell: |
     {{ kubectl }} -n argocd rollout status deploy/argocd-server --timeout=300s
   changed_when: false
+
+- name: Run argocd-server in insecure mode (TLS terminates at the Cloudflare edge)
+  ansible.builtin.shell: |
+    {{ kubectl }} -n argocd patch configmap argocd-cmd-params-cm --type merge \
+      -p '{"data":{"server.insecure":"true"}}'
+  changed_when: true
+
+- name: Restart argocd-server to apply insecure mode
+  ansible.builtin.shell: "{{ kubectl }} -n argocd rollout restart deploy/argocd-server"
+  changed_when: true
+
+- name: Wait for argocd-server to come back
+  ansible.builtin.shell: |
+    {{ kubectl }} -n argocd rollout status deploy/argocd-server --timeout=180s
+  changed_when: false
+
+- name: Render the ArgoCD ingress
+  ansible.builtin.template:
+    src: argocd-ingress.yaml.j2
+    dest: /tmp/argocd-ingress.yaml
+    mode: "0644"
+
+- name: Apply the ArgoCD ingress
+  ansible.builtin.shell: "{{ kubectl }} apply -f /tmp/argocd-ingress.yaml"
+  register: argocd_ing
+  changed_when: "'created' in argocd_ing.stdout or 'configured' in argocd_ing.stdout"
 
 - name: Render the root app-of-apps Application
   ansible.builtin.template:

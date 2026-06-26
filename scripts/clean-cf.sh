@@ -4,7 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 . scripts/_lib.sh
-require_env DOMAIN CF_API_TOKEN CF_ACCOUNT_ID
+require_env CF_API_TOKEN CF_ACCOUNT_ID
+DOMAIN="$(get_domain)"
 
 API="https://api.cloudflare.com/client/v4"
 AUTH=(-H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json")

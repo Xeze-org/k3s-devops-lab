@@ -5,18 +5,27 @@
     path: /usr/local/bin/k3s
   register: k3s_bin
 
-- name: Download k3s installer
+- name: Download k3s installer (retry on transient network failures)
   ansible.builtin.get_url:
     url: https://get.k3s.io
     dest: /tmp/k3s-install.sh
     mode: "0755"
+    timeout: 30
   when: not k3s_bin.stat.exists
+  register: k3s_dl
+  until: k3s_dl is succeeded
+  retries: 5
+  delay: 10
 
-- name: Install k3s
+- name: Install k3s (retry — the installer also pulls the binary over the network)
   ansible.builtin.command: /tmp/k3s-install.sh
   environment:
     INSTALL_K3S_EXEC: "--write-kubeconfig-mode 644"
   when: not k3s_bin.stat.exists
+  register: k3s_install
+  until: k3s_install is succeeded
+  retries: 3
+  delay: 10
   changed_when: true
 
 - name: Wait for the node to become Ready

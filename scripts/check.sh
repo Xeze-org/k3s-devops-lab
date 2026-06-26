@@ -3,13 +3,13 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 . scripts/_lib.sh
-load_env .env
+domain="$(get_domain)"
 
-declare -A hosts=( [MONITORING]="grafana" [JENKINS]="jenkins" [NEXUS]="nexus" )
+declare -A hosts=( [monitoring]="grafana" [jenkins]="jenkins" [nexus]="nexus" )
 rc=0
-for f in MONITORING JENKINS NEXUS; do
-  [ "$(yaml_bool "${!f:-false}")" = "true" ] || continue
-  url="https://${hosts[$f]}.${DOMAIN}"
+for f in monitoring jenkins nexus; do
+  [ "$(flag_enabled "$f")" = "true" ] || continue
+  url="https://${hosts[$f]}.${domain}"
   code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url" || echo "000")
   if [[ "$code" =~ ^(200|301|302|401|403)$ ]]; then
     printf "  OK   %-40s [%s]\n" "$url" "$code"
