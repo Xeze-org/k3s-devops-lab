@@ -45,6 +45,9 @@ nexus:
 
 ## 3. Adding a new tool
 
+> 👉 Prefer a working example? The [`example/`](../example/) folder has a complete,
+> deployable app (raw manifests + an ArgoCD Application) you can copy.
+
 Each tool is one ArgoCD `Application` template, guarded by its flag. Create
 `gitops/root/templates/<tool>.yaml`:
 
