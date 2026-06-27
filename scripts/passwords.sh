@@ -21,7 +21,7 @@ echo "== Admin credentials =="
 show "ArgoCD"  "$(k -n argocd get secret argocd-initial-admin-secret \
                   -o jsonpath='{.data.password}' 2>/dev/null | base64 -d)"
 
-show "Grafana" "$(k -n monitoring get secret monitoring-grafana \
+show "Grafana" "$(k -n monitoring get secret grafana-admin \
                   -o jsonpath='{.data.admin-password}' 2>/dev/null | base64 -d)"
 
 show "Jenkins" "$(k -n jenkins get secret jenkins \

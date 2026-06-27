@@ -17,11 +17,29 @@ spec:
     helm:
       values: |
         grafana:
+          # Read the admin creds from a secret Ansible pre-creates with a random
+          # password, instead of the chart default "prom-operator". Keeps the
+          # credential out of this (public) repo.
+          admin:
+            existingSecret: grafana-admin
+            userKey: admin-user
+            passwordKey: admin-password
           ingress:
             enabled: true
             ingressClassName: traefik
             hosts:
               - grafana.{{ .Values.domain }}
+        {{- if .Values.loki.enabled }}
+          # Loki lives in the `logging` namespace (loki-stack release name = "loki").
+          # Provisioned at Grafana boot so log queries work without manual setup.
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              uid: loki
+              url: http://loki.logging.svc.cluster.local:3100
+              access: proxy
+              isDefault: false
+        {{- end }}
         prometheus:
           prometheusSpec:
             retention: 6h

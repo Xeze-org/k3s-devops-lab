@@ -1,5 +1,6 @@
 {{- if .Values.loki.enabled }}
-# Loki + Promtail (loki-stack). Grafana (from the monitoring app) auto-discovers it.
+# Loki + Promtail (loki-stack). The monitoring app registers this as a Grafana
+# datasource (grafana.additionalDataSources) when loki.enabled is true.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
