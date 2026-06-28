@@ -11,6 +11,7 @@ spec:
   project: default
   source:
     repoURL: https://sonatype.github.io/helm3-charts/
+    chart: nexus-repository-manager
     # Exact pin — no auto-update. Bump manually after checking release notes.
     # 64.2.0 is the newest published chart (Sonatype's helm3-charts repo lags
     # the product; its appVersion is stuck at 3.64.0).
