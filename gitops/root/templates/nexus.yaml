@@ -12,9 +12,10 @@ spec:
   source:
     repoURL: https://sonatype.github.io/helm3-charts/
     chart: nexus-repository-manager
-    # "*" = auto-track the latest published chart (ArgoCD resolves it from the
-    # repo's index.yaml each reconcile). Narrow to e.g. "64.*" to pin the major.
-    targetRevision: "*"
+    # Pinned to major 204: ArgoCD adopts patch/minor charts automatically (so
+    # security fixes like CVE-2024-4956 still roll in) but won't make a blind
+    # major jump across a breaking DB migration. Widen to "*" for latest-always.
+    targetRevision: "204.*"
     helm:
       values: |
         ingress:

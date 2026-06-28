@@ -12,10 +12,11 @@ spec:
   source:
     repoURL: https://charts.jenkins.io
     chart: jenkins
-    # "*" = auto-track the latest chart. Pinning the chart while plugins float
-    # causes drift: old core (5.7.27 => 2.479.2) eventually can't load plugins
-    # that now require a newer Jenkins. Latest chart bundles a compatible pair.
-    targetRevision: "*"
+    # Pinned to major 5: minors/patches still float, so Jenkins core keeps
+    # moving forward and stays plugin-compatible (avoids the drift where old
+    # core can't load plugins that now require a newer Jenkins). Only the 5 => 6
+    # major jump is held back for a human to vet. Widen to "*" for latest-always.
+    targetRevision: "5.*"
     helm:
       values: |
         controller:
