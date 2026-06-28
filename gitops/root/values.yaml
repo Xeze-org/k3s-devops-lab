@@ -13,12 +13,12 @@ branch: main
 # Tool toggles:  true = ArgoCD installs it,  false = ArgoCD prunes it.
 # (Also drives VM RAM/CPU sizing in the Vagrantfile.)
 monitoring:
-  enabled: true      # Prometheus + Grafana
+  enabled: false      # Prometheus + Grafana
 loki:
-  enabled: true      # Loki logs (shown in Grafana)
+  enabled: false      # Loki logs (shown in Grafana)
 jenkins:
   enabled: true     # heavy: +2GB
 nexus:
-  enabled: true     # heavy: +2GB
+  enabled: false     # heavy: +2GB
 harbor:
   enabled: true    # container registry at registry.<domain> — heavy: +2GB
