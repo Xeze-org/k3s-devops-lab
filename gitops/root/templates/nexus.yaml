@@ -12,7 +12,9 @@ spec:
   source:
     repoURL: https://sonatype.github.io/helm3-charts/
     chart: nexus-repository-manager
-    targetRevision: 65.0.0
+    # "*" = auto-track the latest published chart (ArgoCD resolves it from the
+    # repo's index.yaml each reconcile). Narrow to e.g. "64.*" to pin the major.
+    targetRevision: "*"
     helm:
       values: |
         ingress:

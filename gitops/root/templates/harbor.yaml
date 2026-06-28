@@ -1,0 +1,44 @@
+{{- if .Values.harbor.enabled }}
+# Harbor container registry. Multi-component (core/registry/db/redis/jobservice)
+# — heavy, only enable on an 8GB VM (and ideally with Jenkins/Nexus off).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harbor
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://helm.goharbor.io
+    chart: harbor
+    # "*" = auto-track the latest published chart. Narrow to e.g. "1.19.*"
+    # to pin the minor and only adopt patch releases.
+    targetRevision: "*"
+    helm:
+      values: |
+        # TLS is terminated upstream (Cloudflare/Traefik), so Harbor serves
+        # plain HTTP behind the ingress but still emits https:// URLs.
+        externalURL: https://registry.{{ .Values.domain }}
+        expose:
+          type: ingress
+          tls:
+            enabled: false
+          ingress:
+            className: traefik
+            hosts:
+              core: registry.{{ .Values.domain }}
+        # Trim the footprint: drop the Trivy vulnerability scanner.
+        trivy:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: harbor
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

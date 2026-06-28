@@ -20,3 +20,5 @@ jenkins:
   enabled: true     # heavy: +2GB
 nexus:
   enabled: true     # heavy: +2GB
+harbor:
+  enabled: true    # container registry at registry.<domain> — heavy: +2GB
