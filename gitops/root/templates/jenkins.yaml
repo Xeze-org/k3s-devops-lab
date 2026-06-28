@@ -12,11 +12,9 @@ spec:
   source:
     repoURL: https://charts.jenkins.io
     chart: jenkins
-    # Pinned to major 5: minors/patches still float, so Jenkins core keeps
-    # moving forward and stays plugin-compatible (avoids the drift where old
-    # core can't load plugins that now require a newer Jenkins). Only the 5 => 6
-    # major jump is held back for a human to vet. Widen to "*" for latest-always.
-    targetRevision: "5.*"
+    # Exact pin — no auto-update. Bump manually (newer chart = newer Jenkins
+    # core + a plugin set tested against it, so move chart and plugins together).
+    targetRevision: "5.9.29"
     helm:
       values: |
         controller:

@@ -13,10 +13,8 @@ spec:
   source:
     repoURL: https://helm.goharbor.io
     chart: harbor
-    # Pinned to major 1: ArgoCD adopts minor/patch charts automatically but
-    # holds back the 1 => 2 major jump for a human to vet. Narrow further to
-    # "1.19.*" for patch-only, or widen to "*" for latest-always.
-    targetRevision: "1.*"
+    # Exact pin — no auto-update. Bump manually after checking release notes.
+    targetRevision: "1.19.1"
     helm:
       values: |
         # TLS is terminated upstream (Cloudflare/Traefik), so Harbor serves
