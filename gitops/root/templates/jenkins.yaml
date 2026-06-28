@@ -12,7 +12,10 @@ spec:
   source:
     repoURL: https://charts.jenkins.io
     chart: jenkins
-    targetRevision: 5.7.27
+    # "*" = auto-track the latest chart. Pinning the chart while plugins float
+    # causes drift: old core (5.7.27 => 2.479.2) eventually can't load plugins
+    # that now require a newer Jenkins. Latest chart bundles a compatible pair.
+    targetRevision: "*"
     helm:
       values: |
         controller:
