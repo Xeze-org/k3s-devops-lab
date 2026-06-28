@@ -17,6 +17,6 @@ monitoring:
 loki:
   enabled: true      # Loki logs (shown in Grafana)
 jenkins:
-  enabled: false     # heavy: +2GB
+  enabled: true     # heavy: +2GB
 nexus:
-  enabled: false     # heavy: +2GB
+  enabled: true     # heavy: +2GB
