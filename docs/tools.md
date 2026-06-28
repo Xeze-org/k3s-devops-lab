@@ -10,6 +10,10 @@ prunes disabled ones.
 | `loki`       | Loki (logs, via Grafana)    | — (no UI)                |
 | `jenkins`    | Jenkins CI                  | `jenkins.<domain>`       |
 | `nexus`      | Nexus Repository Manager    | `nexus.<domain>`         |
+| `harbor`     | Harbor registry (optional)  | `registry.<domain>`      |
+
+Nexus also serves as the Docker registry, so Harbor is usually left off — see
+[Docker registry](docker-registry.md).
 
 ## How toggling works
 
@@ -29,4 +33,4 @@ immediately:
 vagrant ssh -c "bash /vagrant/scripts/sync.sh"
 ```
 
-→ See also: [VM sizing](vm-sizing.md) · [Passwords](passwords.md)
+→ See also: [VM sizing](vm-sizing.md) · [Passwords](passwords.md) · [Docker registry](docker-registry.md)

@@ -1,8 +1,25 @@
 # Troubleshooting
 
-### `chart not found` on sync
-Pinned Helm chart versions in `gitops/root/templates/*.yaml` age out. Bump that app's
-`targetRevision` to a current version and push.
+### `chart not found` / `version matching constraint not found` on sync
+Helm chart versions in `gitops/root/templates/*.yaml` are pinned exactly (no auto-update).
+A pin can age out, or be wrong for that repo. Confirm the version actually exists, then bump
+the app's `targetRevision`:
+```bash
+helm show chart <chart> --repo <repoURL> --version <x.y.z>   # errors if it doesn't exist
+```
+Note: the Sonatype `nexus-repository-manager` chart tops out around `64.x` — its numbering is
+unrelated to the Nexus product version (see next entry).
+
+### Nexus pod CrashLoopBackOff: `Unrecognized VM option 'UseCGroupMemoryLimitForHeap'`
+The Sonatype chart's `appVersion` lags the product (stuck at `3.64.0`, below the `3.68.1`
+that fixes CVE-2024-4956), so `nexus.yaml` pins a patched binary via `image.tag`. But the
+chart's default JVM args carry `-XX:+UseCGroupMemoryLimitForHeap`, a **JDK 8–10-only flag
+removed in JDK 11**. A modern Nexus image rejects it and the JVM aborts (exit 1). The fix is
+already in `nexus.yaml`: `nexus.env` overrides `INSTALL4J_ADD_VM_PARAMS` to drop the flag and
+set an explicit heap. When bumping `image.tag`, keep that override.
+
+> Gotcha: `resources`, `env` and `securityContext` go **under `nexus:`** in this chart — a
+> top-level `resources:` block is silently ignored.
 
 ### A tool didn't install after I enabled it
 ArgoCD reconciles every ~3 min. Force it:
