@@ -12,12 +12,18 @@ spec:
   source:
     repoURL: https://sonatype.github.io/helm3-charts/
     chart: nexus-repository-manager
-    # Pinned to major 204: ArgoCD adopts patch/minor charts automatically (so
-    # security fixes like CVE-2024-4956 still roll in) but won't make a blind
-    # major jump across a breaking DB migration. Widen to "*" for latest-always.
-    targetRevision: "204.*"
+    # Pinned to chart major 64 (latest is 64.2.0). NOTE: this Sonatype chart
+    # lags the Nexus binary badly — its appVersion is stuck at 3.64.0, which is
+    # BELOW the 3.68.1 that fixes CVE-2024-4956. So pinning the chart alone does
+    # NOT remediate the CVE; we override image.tag below to a patched binary.
+    targetRevision: "64.*"
     helm:
       values: |
+        # Decouple the Nexus binary from the chart's stale 3.64.0 default and
+        # pin a patched release (>= 3.68.1 closes CVE-2024-4956). Bump this tag
+        # manually to adopt newer Nexus; the chart won't do it for us.
+        image:
+          tag: "3.93.2"
         ingress:
           enabled: true
           ingressClassName: traefik
