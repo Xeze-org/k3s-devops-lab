@@ -69,6 +69,9 @@ Vagrant.configure("2") do |config|
     v.cpus   = cpu
     v.gui    = false
     v.vmx["virtualHW.version"] = "21"
+    # 1 core per socket => any vCPU count is valid (VMware aborts when
+    # numvcpus isn't a multiple of cores-per-socket, e.g. an odd count like 7).
+    v.vmx["cpuid.coresPerSocket"] = "1"
   end
 
   config.vm.provision "ansible_local" do |a|

@@ -67,6 +67,26 @@
   register: grafana_admin_secret
   changed_when: "'created' in grafana_admin_secret.stdout"
 
+- name: Ensure the harbor namespace exists (Harbor's admin secret must be present before ArgoCD syncs Harbor)
+  ansible.builtin.shell: |
+    {{ kubectl }} create namespace harbor \
+      --dry-run=client -o yaml | {{ kubectl }} apply -f -
+  changed_when: false
+
+# Strong, per-cluster Harbor admin password instead of the chart default "Harbor12345".
+# Generated in-cluster so it never lands in the (public) Git repo. Idempotent: created
+# once and then left alone, so it stays stable across re-provisions. Harmless if
+# harbor is disabled — it's just an unused secret. Key name is the chart default
+# (existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD).
+- name: Generate a random Harbor admin password (only when the secret is absent)
+  ansible.builtin.shell: |
+    if ! {{ kubectl }} -n harbor get secret harbor-admin >/dev/null 2>&1; then
+      {{ kubectl }} -n harbor create secret generic harbor-admin \
+        --from-literal=HARBOR_ADMIN_PASSWORD="$(openssl rand -base64 24)"
+    fi
+  register: harbor_admin_secret
+  changed_when: "'created' in harbor_admin_secret.stdout"
+
 - name: Render the root app-of-apps Application
   ansible.builtin.template:
     src: root-app.yaml.j2

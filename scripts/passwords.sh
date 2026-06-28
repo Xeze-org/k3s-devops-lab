@@ -30,8 +30,7 @@ show "Jenkins" "$(k -n jenkins get secret jenkins \
 show "Nexus"   "$(k -n nexus exec deploy/nexus-nexus-repository-manager \
                   -- cat /nexus-data/admin.password 2>/dev/null)"
 
-# Harbor stores its admin password bcrypt-hashed in the DB — not readable from
-# the cluster. It's whatever harborAdminPassword was set to (chart default below).
-show "Harbor"  "$(k get ns harbor >/dev/null 2>&1 && echo 'Harbor12345 (helm default — set harborAdminPassword to change)')"
+show "Harbor"  "$(k -n harbor get secret harbor-admin \
+                  -o jsonpath='{.data.HARBOR_ADMIN_PASSWORD}' 2>/dev/null | base64 -d)"
 
 echo
