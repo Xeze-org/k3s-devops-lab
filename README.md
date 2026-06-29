@@ -31,7 +31,7 @@ A fully-automated, modular DevOps learning lab on one VMware VM. Toggle tools on
 > for [Cilium + Hubble](docs/cilium.md). Unlike the ArgoCD tool toggles, it's a
 > provision-time flag (needs a fresh `vagrant up`).
 
-📖 **Docs:** [Prerequisites](docs/prerequisites.md) · [Quick start](docs/quickstart.md) · [Configuration](docs/configuration.md) · [Tools](docs/tools.md) · [KEDA](docs/keda.md) · [Cilium + Hubble](docs/cilium.md) · [Passwords](docs/passwords.md) · [Networking](docs/networking.md) · [VM sizing](docs/vm-sizing.md) · [Troubleshooting](docs/troubleshooting.md)
+📖 **Docs:** [Prerequisites](docs/prerequisites.md) · [Quick start](docs/quickstart.md) · [Configuration](docs/configuration.md) · [Tools](docs/tools.md) · [KEDA](docs/keda.md) · [Knative](docs/knative.md) · [Cilium + Hubble](docs/cilium.md) · [Passwords](docs/passwords.md) · [Networking](docs/networking.md) · [VM sizing](docs/vm-sizing.md) · [Troubleshooting](docs/troubleshooting.md)
 
 🧩 **Want to deploy your own app?** Copy the [`example/`](example/) app — manifests + ArgoCD setup, fully explained.
 

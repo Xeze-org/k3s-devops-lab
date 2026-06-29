@@ -40,6 +40,10 @@ nexus:
   enabled: false     # heavy: +2GB
 keda:
   enabled: true      # event-driven autoscaler + Cron demo — see docs/keda.md
+kedaHttp:
+  enabled: false     # KEDA HTTP Add-on (scale web apps to zero); needs keda.enabled
+knative:
+  enabled: false     # Knative Serving + Kourier (self-hosted Cloud Run) — heavy: +1GB
 
 # Provision-time CNI flag (NOT an ArgoCD toggle — needs a fresh vagrant up).
 cilium:

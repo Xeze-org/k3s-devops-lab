@@ -24,6 +24,12 @@ harbor:
   enabled: false    # container registry at registry.<domain> — heavy: +2GB
 keda:
   enabled: true     # event-driven autoscaler + a self-contained Cron demo — light: +512MB
+kedaHttp:
+  enabled: true     # KEDA HTTP Add-on: scale HTTP apps to zero (Cloud Run style).
+                    # REQUIRES keda.enabled=true. Light: +256MB. See docs/keda.md.
+knative:
+  enabled: false    # Knative Serving + Kourier: self-hosted Cloud Run (request-driven
+                    # scale-to-zero). Heavy: +1GB (~8 pods). Live toggle. See docs/knative.md.
 
 # Networking CNI. PROVISION-TIME flag — unlike every tool above (which ArgoCD
 # reconciles live), this is read by the Vagrantfile + Ansible at FIRST BOOT.

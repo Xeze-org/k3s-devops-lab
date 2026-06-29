@@ -49,6 +49,8 @@ if enabled?(vals, "jenkins") ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "nexus")   ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "harbor")  ; mem += 2048 ; cpu += 1 ; end
 mem += 512  if enabled?(vals, "keda")
+mem += 256  if enabled?(vals, "kedaHttp")  # interceptor + external scaler + operator
+mem += 1024 if enabled?(vals, "knative")   # serving control plane + kourier (~8 pods)
 mem += 768  if enabled?(vals, "cilium")   # cilium-agent + operator + hubble relay/ui
 
 computed_mem = mem

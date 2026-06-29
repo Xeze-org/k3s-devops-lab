@@ -12,6 +12,8 @@ prunes disabled ones.
 | `nexus`      | Nexus Repository Manager    | `nexus.<domain>`         |
 | `harbor`     | Harbor registry (optional)  | `registry.<domain>`      |
 | `keda`       | KEDA autoscaler + Cron demo | — (no UI) — [docs](keda.md) |
+| `kedaHttp`   | KEDA HTTP Add-on (scale-to-zero for web apps; needs `keda`) | — — [docs](keda.md#http-add-on--scale-web-apps-to-zero-cloud-run-style) |
+| `knative`    | Knative Serving + Kourier (self-hosted Cloud Run) | — — [docs](knative.md) |
 
 Nexus also serves as the Docker registry, so Harbor is usually left off — see
 [Docker registry](docker-registry.md).
