@@ -38,6 +38,12 @@ jenkins:
   enabled: false     # heavy: +2GB
 nexus:
   enabled: false     # heavy: +2GB
+keda:
+  enabled: true      # event-driven autoscaler + Cron demo — see docs/keda.md
+
+# Provision-time CNI flag (NOT an ArgoCD toggle — needs a fresh vagrant up).
+cilium:
+  enabled: true      # Cilium eBPF + Hubble replace Flannel + kube-proxy — see docs/cilium.md
 ```
 
 > ⚠️ `repoURL` **must** point at your own fork, not the upstream repo — ArgoCD reads

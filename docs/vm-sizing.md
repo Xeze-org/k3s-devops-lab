@@ -5,9 +5,11 @@ RAM and CPU are computed from the enabled flags in `values.yaml`:
 - base **4 GB / 4 CPU**
 - `+1 GB` monitoring
 - `+0.5 GB` Loki
-- `+2 GB / +1 CPU` each for Jenkins and Nexus
+- `+2 GB / +1 CPU` each for Jenkins, Nexus, and Harbor
+- `+0.5 GB` KEDA
+- `+0.75 GB` Cilium (eBPF agent + operator + Hubble)
 
-…clamped to **4–8 GB / 4–8 CPU**.
+…clamped to **4–12 GB / 4–8 CPU**.
 
 Override with `VM_MEMORY` / `VM_CPUS` in `.env`.
 

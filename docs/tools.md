@@ -11,9 +11,17 @@ prunes disabled ones.
 | `jenkins`    | Jenkins CI                  | `jenkins.<domain>`       |
 | `nexus`      | Nexus Repository Manager    | `nexus.<domain>`         |
 | `harbor`     | Harbor registry (optional)  | `registry.<domain>`      |
+| `keda`       | KEDA autoscaler + Cron demo | — (no UI) — [docs](keda.md) |
 
 Nexus also serves as the Docker registry, so Harbor is usually left off — see
 [Docker registry](docker-registry.md).
+
+## Provision-time flag: `cilium`
+
+`cilium` is **not** an ArgoCD-reconciled tool — it's the cluster CNI, read by the
+Vagrantfile + Ansible at first boot. `true` swaps Flannel + kube-proxy for Cilium
+(eBPF) + Hubble. You can't hot-swap a CNI, so changing it needs a full
+`vagrant destroy && vagrant up`, not a `git push`. See [Cilium + Hubble](cilium.md).
 
 ## How toggling works
 

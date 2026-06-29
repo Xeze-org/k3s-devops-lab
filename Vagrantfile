@@ -49,6 +49,7 @@ if enabled?(vals, "jenkins") ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "nexus")   ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "harbor")  ; mem += 2048 ; cpu += 1 ; end
 mem += 512  if enabled?(vals, "keda")
+mem += 768  if enabled?(vals, "cilium")   # cilium-agent + operator + hubble relay/ui
 
 computed_mem = mem
 mem = [[mem, 4096].max, 12288].min
@@ -84,7 +85,8 @@ Vagrant.configure("2") do |config|
       cf_api_token:  env["CF_API_TOKEN"],
       cf_account_id: env["CF_ACCOUNT_ID"],
       git_repo:      repo,
-      git_branch:    branch
+      git_branch:    branch,
+      cilium_enabled: enabled?(vals, "cilium")
     }
   end
 end

@@ -24,5 +24,6 @@
 
   roles:
     - k3s
+    - cilium      # eBPF CNI + Hubble (no-op unless cilium_enabled); MUST precede argocd
     - argocd
     - cloudflared

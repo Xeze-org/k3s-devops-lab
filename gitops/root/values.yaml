@@ -24,3 +24,11 @@ harbor:
   enabled: false    # container registry at registry.<domain> — heavy: +2GB
 keda:
   enabled: true     # event-driven autoscaler + a self-contained Cron demo — light: +512MB
+
+# Networking CNI. PROVISION-TIME flag — unlike every tool above (which ArgoCD
+# reconciles live), this is read by the Vagrantfile + Ansible at FIRST BOOT.
+# true  = Cilium (eBPF) CNI + Hubble replace Flannel + kube-proxy entirely.
+# false = stock K3s (Flannel + kube-proxy).
+# You CANNOT hot-swap a CNI: changing this needs `vagrant destroy && vagrant up`.
+cilium:
+  enabled: true     # eBPF datapath + Hubble observability — +768MB
