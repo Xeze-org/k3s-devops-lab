@@ -22,3 +22,5 @@ nexus:
   enabled: true     # heavy: +2GB
 harbor:
   enabled: false    # container registry at registry.<domain> — heavy: +2GB
+keda:
+  enabled: true     # event-driven autoscaler + a self-contained Cron demo — light: +512MB

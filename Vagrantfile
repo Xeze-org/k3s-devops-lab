@@ -48,6 +48,7 @@ mem += 512  if enabled?(vals, "loki")
 if enabled?(vals, "jenkins") ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "nexus")   ; mem += 2048 ; cpu += 1 ; end
 if enabled?(vals, "harbor")  ; mem += 2048 ; cpu += 1 ; end
+mem += 512  if enabled?(vals, "keda")
 
 computed_mem = mem
 mem = [[mem, 4096].max, 12288].min
