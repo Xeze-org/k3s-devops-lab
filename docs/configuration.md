@@ -53,6 +53,10 @@ cilium:
 > ⚠️ `repoURL` **must** point at your own fork, not the upstream repo — ArgoCD reads
 > config from wherever this points.
 
+> 💡 Enabling **Jenkins + Nexus**? After they sync, run the one-time
+> [Bootstrap CI/CD](bootstrap.md) step (`scripts/config.sh`) to wire up registry
+> secrets, Traefik routing, and Jenkins deploy RBAC.
+
 ## 3. Adding a new tool
 
 > 👉 Prefer a working example? The [`example/`](../example/) folder has a complete,
