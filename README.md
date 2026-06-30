@@ -43,10 +43,6 @@ A fully-automated, modular DevOps learning lab on one VMware VM. Toggle tools on
 
 🧩 **Want to deploy your own app?** Copy the [`example/`](example/) app — manifests + ArgoCD setup, fully explained.
 
-> [!WARNING]
-> **Fork this repo first.** Then set `repoURL` (your fork) and `domain` in
-> `gitops/root/values.yaml` and push — ArgoCD pulls from **your** repository, not this one.
-
 ```mermaid
 flowchart LR
   v[gitops/root/values.yaml<br/>domain + tool flags] --> vg[vagrant up]
